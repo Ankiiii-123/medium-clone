@@ -2,6 +2,7 @@ package com.ankita.mediumclone.controller;
 
 import com.ankita.mediumclone.service.UserService;
 import com.ankita.mediumclone.entity.User;
+import com.ankita.mediumclone.dto.UserResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public User register(@RequestBody User user) {
+    public UserResponse register(@RequestBody User user) {
         return userService.registerUser(user);
 
     }

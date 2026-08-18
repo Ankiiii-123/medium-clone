@@ -16,3 +16,13 @@ Content-Type: application/json
   "email": "rahul@gmail.com",
   "password": "abc123"
 }
+
+###new user
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "username": "Priya",
+  "email": "priya@gmail.com",
+  "password": "abc123"
+}
