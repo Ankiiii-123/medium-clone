@@ -3,6 +3,7 @@ import com.ankita.mediumclone.dto.UserResponse;
 import com.ankita.mediumclone.dto.LoginRequest;
 import com.ankita.mediumclone.entity.User;
 import com.ankita.mediumclone.exception.UserAlreadyExistsException;
+import com.ankita.mediumclone.exception.InvalidCredentialsException;
 import com.ankita.mediumclone.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,10 +32,10 @@ public class UserService {
     public UserResponse loginUser(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return new UserResponse(
