@@ -1,6 +1,6 @@
 package com.ankita.mediumclone.service;
 import com.ankita.mediumclone.dto.UserResponse;
-
+import com.ankita.mediumclone.dto.LoginRequest;
 import com.ankita.mediumclone.entity.User;
 import com.ankita.mediumclone.exception.UserAlreadyExistsException;
 import com.ankita.mediumclone.repository.UserRepository;
@@ -26,6 +26,21 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return new UserResponse ( savedUser.getId(), savedUser.getUsername(), savedUser.getEmail() );
+    }
 
+    public UserResponse loginUser(LoginRequest loginRequest) {
+
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail()
+        );
     }
 }
