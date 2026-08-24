@@ -2,7 +2,7 @@ package com.ankita.mediumclone.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-
+import io.jsonwebtoken.Claims;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -17,6 +17,20 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+    private boolean isTokenExpired(String token) {
+        return extractAllClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
+
+
     public String generateToken(String email) {
 
         Date now = new Date();
@@ -28,6 +42,16 @@ public class JwtService {
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public String extractEmail(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public boolean isTokenValid(String token, String email) {
+        String tokenEmail = extractEmail(token);
+
+        return tokenEmail.equals(email) && !isTokenExpired(token);
     }
 
     @Value("${jwt.secret}")

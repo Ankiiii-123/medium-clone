@@ -44,3 +44,7 @@ Content-Type: application/json
   "email": "priya@gmail.com",
   "password": "wrongpassword"
 }
+
+### Protected endpoint WITHOUT token
+GET http://localhost:8080/users/profile
+Authorization: Bearer YOUR_TOKEN_HERE

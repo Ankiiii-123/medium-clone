@@ -24,6 +24,11 @@ public class UserController {
         return "User API is working!";
     }
 
+    @GetMapping("/users/profile")
+    public String profile() {
+        return "You are authenticated!";
+    }
+
     @PostMapping("/users/register")
     public UserResponse register(@RequestBody User user) {
         return userService.registerUser(user);
