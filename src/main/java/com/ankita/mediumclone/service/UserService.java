@@ -7,6 +7,7 @@ import com.ankita.mediumclone.exception.InvalidCredentialsException;
 import com.ankita.mediumclone.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.ankita.mediumclone.dto.LoginResponse;
 
 
 @Service
@@ -14,10 +15,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public UserResponse registerUser(User user) {
@@ -29,7 +32,7 @@ public class UserService {
         return new UserResponse ( savedUser.getId(), savedUser.getUsername(), savedUser.getEmail() );
     }
 
-    public UserResponse loginUser(LoginRequest loginRequest) {
+    public LoginResponse loginUser(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
@@ -38,7 +41,9 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        return new UserResponse(
+        String token = jwtService.generateToken(user.getEmail());
+        return new LoginResponse(
+                token,
                 user.getId(),
                 user.getUsername(),
                 user.getEmail()
