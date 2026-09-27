@@ -47,4 +47,45 @@ Content-Type: application/json
 
 ### Protected endpoint WITHOUT token
 GET http://localhost:8080/users/profile
-Authorization: Bearer YOUR_TOKEN_HERE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc2NzYzMzMsImV4cCI6MTc4Nzc2MjczM30.mTMMxB-bwYl661I7lXYKAN19GmdxnSswvKU2lKiF53Y
+
+### Login
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "priya@gmail.com",
+  "password": "abc123"
+}
+
+### Create Article
+POST http://localhost:8080/articles
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc1OTExOTEsImV4cCI6MTc4NzY3NzU5MX0.rETJr6UWvBQTnJ3LZ-TQHRlRM2ltcl8nfp_4y_bwhaY
+
+{
+  "title": "My First Article",
+  "content": "This is my first article on my Medium clone."
+}
+
+### Create Article
+POST http://localhost:8080/articles
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc2NzYzMzMsImV4cCI6MTc4Nzc2MjczM30.mTMMxB-bwYl661I7lXYKAN19GmdxnSswvKU2lKiF53Y
+
+{
+  "title": "Learning Spring Boot",
+  "content": "Day 2 at learning how DTOs help control API responses."
+}
+
+### Get All Articles
+GET http://localhost:8080/articles
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc2NzYzMzMsImV4cCI6MTc4Nzc2MjczM30.mTMMxB-bwYl661I7lXYKAN19GmdxnSswvKU2lKiF53Y
+
+### Get Article By ID
+GET http://localhost:8080/articles/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc2NzYzMzMsImV4cCI6MTc4Nzc2MjczM30.mTMMxB-bwYl661I7lXYKAN19GmdxnSswvKU2lKiF53Y
+
+### Article Not Found Test
+GET http://localhost:8080/articles/999
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcml5YUBnbWFpbC5jb20iLCJpYXQiOjE3ODc2NzYzMzMsImV4cCI6MTc4Nzc2MjczM30.mTMMxB-bwYl661I7lXYKAN19GmdxnSswvKU2lKiF53Y
