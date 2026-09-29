@@ -1,16 +1,18 @@
 package com.ankita.mediumclone.service;
 
 import com.ankita.mediumclone.dto.ArticleRequest;
+import com.ankita.mediumclone.dto.ArticleRequest;
+import com.ankita.mediumclone.dto.ArticleResponse;
 import com.ankita.mediumclone.entity.Article;
 import com.ankita.mediumclone.entity.User;
-import com.ankita.mediumclone.repository.ArticleRepository;
-import com.ankita.mediumclone.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.ankita.mediumclone.dto.ArticleResponse;
 import com.ankita.mediumclone.exception.ArticleNotFoundException;
 import com.ankita.mediumclone.exception.ForbiddenException;
+import com.ankita.mediumclone.repository.ArticleRepository;
+import com.ankita.mediumclone.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ArticleService {
@@ -54,10 +56,9 @@ public class ArticleService {
         );
     }
 
-    public List<ArticleResponse> getAllArticles() {
+    public Page<ArticleResponse> getAllArticles(Pageable pageable) {
 
-        return articleRepository.findAll()
-                .stream()
+        return articleRepository.findAll(pageable)
                 .map(article -> new ArticleResponse(
                         article.getId(),
                         article.getTitle(),
@@ -65,25 +66,24 @@ public class ArticleService {
                         article.getAuthor().getUsername(),
                         article.getCreatedAt(),
                         article.getUpdatedAt()
-                ))
-                .toList();
+                ));
     }
 
-    public ArticleResponse getArticleById(Long id) {
+    public ArticleResponse getArticleById(Long id){
 
-        Article article = articleRepository.findById(id)
-                .orElseThrow(() ->
-                        new ArticleNotFoundException("Article not found"));
+            Article article = articleRepository.findById(id)
+                    .orElseThrow(() ->
+                            new ArticleNotFoundException("Article not found"));
 
-        return new ArticleResponse(
-                article.getId(),
-                article.getTitle(),
-                article.getContent(),
-                article.getAuthor().getUsername(),
-                article.getCreatedAt(),
-                article.getUpdatedAt()
-        );
-    }
+            return new ArticleResponse(
+                    article.getId(),
+                    article.getTitle(),
+                    article.getContent(),
+                    article.getAuthor().getUsername(),
+                    article.getCreatedAt(),
+                    article.getUpdatedAt()
+            );
+        }
 
     public ArticleResponse updateArticle(Long id, ArticleRequest request) {
 
@@ -101,7 +101,7 @@ public class ArticleService {
         // 3. Make sure the logged-in user owns this article
         if (!article.getAuthor().getEmail().equals(email)) {
             throw new ForbiddenException(
-                    "You are not allowed to delete this article");
+                    "You are not allowed to update this article");
         }
 
         // 4. Update the article
@@ -137,7 +137,7 @@ public class ArticleService {
 
         // 3. Make sure the logged-in user owns the article
         if (!article.getAuthor().getEmail().equals(email)) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "You are not allowed to delete this article");
         }
 
