@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.*;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springdoc.core.annotations.ParameterObject;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -32,7 +33,8 @@ public class ArticleController {
     }
 
     @GetMapping
-    public Page<ArticleResponse> getAllArticles(Pageable pageable) {
+    public Page<ArticleResponse> getAllArticles(
+            @ParameterObject Pageable pageable) {
         return articleService.getAllArticles(pageable);
     }
 
@@ -54,4 +56,8 @@ public class ArticleController {
             articleService.deleteArticle(id);
 
     }
+
+
+
+
 }

@@ -25,6 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.springframework.data.domain.Sort;
+import com.ankita.mediumclone.dto.ArticleRequest;
+import com.ankita.mediumclone.exception.ArticleNotFoundException;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
@@ -313,6 +318,25 @@ class ArticleServiceTest {
 
 
     @Test
+    void deleteArticle_shouldThrowExceptionWhenArticleNotFound() {
+        // Arrange
+        when(articleRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                ArticleNotFoundException.class,
+                () -> articleService.deleteArticle(99L)
+        );
+
+        // Verify no deletion occurs
+        verify(articleRepository).findById(99L);
+        verify(articleRepository, never()).delete(any(Article.class));
+    }
+
+
+
+    @Test
     void createArticle_shouldCreateArticleForLoggedInUser() {
         User author = new User();
         author.setUsername("Ankita");
@@ -379,6 +403,62 @@ class ArticleServiceTest {
 
         verify(articleRepository).findAll(pageable);
     }
+
+
+    @Test
+    void updateArticle_shouldThrowExceptionWhenArticleNotFound() {
+        when(articleRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        ArticleRequest request = new ArticleRequest();
+        request.setTitle("Updated title");
+        request.setContent("Updated content");
+
+        assertThrows(
+                ArticleNotFoundException.class,
+                () -> articleService.updateArticle(99L, request)
+        );
+
+        verify(articleRepository).findById(99L);
+        verify(articleRepository, never()).save(any(Article.class));
+    }
+
+
+    @Test
+    void createArticle_shouldThrowExceptionWhenUserNotFound() {
+        // Arrange: simulate an authenticated user who isn't in the database
+        org.springframework.security.core.Authentication authentication =
+                mock(org.springframework.security.core.Authentication.class);
+
+        when(authentication.getName()).thenReturn("missing@example.com");
+
+        SecurityContextHolder.getContext()
+                .setAuthentication(authentication);
+
+        when(userRepository.findByEmail("missing@example.com"))
+                .thenReturn(Optional.empty());
+
+        ArticleRequest request = new ArticleRequest();
+        request.setTitle("Test article");
+        request.setContent("Test content");
+
+        try {
+            // Act & Assert
+            RuntimeException exception = assertThrows(
+                    RuntimeException.class,
+                    () -> articleService.createArticle(request)
+            );
+
+            assertEquals("User not found", exception.getMessage());
+
+            // No article should be saved if the author doesn't exist
+            verify(articleRepository, never()).save(any(Article.class));
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+
 
 
 
